@@ -1,0 +1,84 @@
+# Define the function and its derivative
+def function(x):
+    return (x + 3) ** 2
+
+def derivative(x):
+    return 2 * (x + 3)
+
+# Gradient Descent function
+def gradient_descent(starting_x, learning_rate, num_iterations):
+    x = starting_x
+    for i in range(num_iterations):
+        grad = derivative(x)               # Calculate the gradient
+        x = x - learning_rate * grad       # Update x
+        y = function(x)                    # Calculate the function value at new x
+        print(f"Iteration {i+1}: x = {x:.5f}, y = {y:.5f}")
+    return x
+
+# Parameters
+starting_x = 2            # Starting point
+learning_rate = 0.1       # Learning rate
+num_iterations = 20       # Number of iterations
+
+# Run gradient descent
+local_min_x = gradient_descent(starting_x, learning_rate, num_iterations)
+print(f"\nLocal minimum occurs at x = {local_min_x:.5f}")
+
+
+
+import pandas as pd
+df=pd.read_csv("Churn_Modelling.csv")
+df.head()
+X=df[['CreditScore', 'Age', 'Tenure', 'Balance', 'NumOfProducts', 'HasCrCard','IsActiveMember', 'EstimatedSalary','Exited']]
+Y=df['Exited']
+Y.value_counts()
+from sklearn.preprocessing import StandardScaler
+scaler=StandardScaler()
+X_scaled=scaler.fit_transform(X)
+X_scaled
+from sklearn.model_selection import train_test_split
+X_train,X_test,Y_train,Y_test=train_test_split(X_scaled,Y,test_size=0.25,random_state=0)
+from sklearn.neural_network import MLPClassifier
+nn_model=MLPClassifier(hidden_layer_sizes=(80,80,80),random_state=0,max_iter=100,activation='relu')
+y_pred=nn_model.predict(X_test)
+y_pred
+from sklearn.metrics import ConfusionMatrixDisplay, classification_report
+from sklearn.metrics import accuracy_score
+Y_test.value_counts()
+ConfusionMatrixDisplay.from_predictions(Y_test,y_pred)
+accuracy_score(Y_test,y_pred)
+print(classification_report(Y_test,y_pred))
+Y.value_counts()
+from imblearn.over_sampling import RandomOverSampler
+ros=RandomOverSampler(random_state=0)
+X_new,Y_new=ros.fit_resample(X,Y)
+
+from sklearn.preprocessing import StandardScaler
+scaler=StandardScaler()
+X_scaled=scaler.fit_transform(X_new)
+
+Xn_train,Xn_test,Yn_train,Yn_test =train_test_split(X_scaled,Y_new,random_state=0,test_size=0.25)
+
+from sklearn.neural_network import MLPClassifier
+nn_model=MLPClassifier(hidden_layer_sizes=(80,80,80),random_state=0,max_iter=100,activation='relu')
+nn_model.fit(Xn_train,Yn_train)
+y_pred=nn_model.predict(Xn_test)
+y_pred
+Yn_test.value_counts()
+accuracy_score(Yn_test,y_pred)
+print(classification_report(Yn_test,y_pred))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
