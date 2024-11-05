@@ -1,0 +1,279 @@
+def create_board(n):
+    return [[0] * n for _ in range(n)]
+
+def is_safe(board, row, col, pre_placed):
+    # Check if there's any conflict with pre-placed queens
+    for r, c in pre_placed:
+        if r == row or c == col or abs(r - row) == abs(c - col):
+            return False
+
+    # Check this row on the left side
+    for i in range(col):
+        if board[row][i] == 1:
+            return False
+
+    # Check upper diagonal on the left side
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    # Check lower diagonal on the left side
+    for i, j in zip(range(row, len(board)), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    return True
+
+def solve_nqueens(board, col, pre_placed):
+    # Base case: if all queens are placed
+    if col >= len(board):
+        return True
+
+    # Skip column if it contains a pre-placed queen
+    if col in [c for _, c in pre_placed]:
+        return solve_nqueens(board, col + 1, pre_placed)
+
+    # Try placing a queen in each row in the current column
+    for row in range(len(board)):
+        if is_safe(board, row, col, pre_placed) and all(row != r for r, _ in pre_placed):
+            board[row][col] = 1
+            if solve_nqueens(board, col + 1, pre_placed):
+                return True
+            # Backtrack if placing queen here doesn't lead to solution
+            board[row][col] = 0
+
+    return False
+
+def place_first_queen(board, row, col, pre_placed):
+    board[row][col] = 1
+    pre_placed.append((row, col))
+
+def display_board(board):
+    for row in board:
+        print(" ".join("Q" if x else "." for x in row))
+    print()
+
+def main():
+    n = 8
+    board = create_board(n)
+    pre_placed = []
+
+    while True:
+        print("\n8-Queens Problem")
+        print("1. Place First Queen")
+        print("2. Solve 8-Queens")
+        print("3. Display Board")
+        print("4. Exit")
+
+        choice = input("Choose an option (1/2/3/4): ")
+
+        if choice == '1':
+            row = int(input("Enter row (0-7) for the first queen: "))
+            col = int(input("Enter column (0-7) for the first queen: "))
+            if 0 <= row < n and 0 <= col < n:
+                place_first_queen(board, row, col, pre_placed)
+                print(f"First queen placed at position ({row}, {col}).")
+            else:
+                print("Invalid position. Please enter values between 0 and 7.")
+        
+        elif choice == '2':
+            if solve_nqueens(board, 0, pre_placed):
+                print("Solution found.")
+            else:
+                print("No solution exists.")
+        
+        elif choice == '3':
+            display_board(board)
+        
+        elif choice == '4':
+            print("Exiting the program.")
+            break
+        
+        else:
+            print("Invalid choice. Please select 1, 2, 3, or 4.")
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+
+
+
+
+
+
+def knapsack(W,weights,values):
+    ratios=[]
+
+    for i in range(len(weights)):
+        ratio=values[i]/weights[i]
+        ratios.append((ratio,weights[i],values[i]))
+        ratios=sorted(ratios,key=lambda x:x[0],reverse=True)
+
+        total_value=0
+        current_weight=0
+
+        for i in range(len(ratios)):
+            ratio,weight,value=ratios[i]
+            if current_weight+weight<=W:
+                current_weight+=weight
+                total_value+=value
+
+            else:
+                remaining_capacity = W-current_weight
+                total_value+=ratio*remaining_capacity
+                break
+    return total_value
+
+def main5():
+
+    n=int(input("Enter number of items : "))
+
+    weights=[]
+    values=[]
+
+    for i in range(n):
+        weight=float(input(f"Enter weight of item {i+1} "))
+        value=float(input(f"Enter value of item {i+1} "))
+        weights.append(weight)
+        values.append(value)
+
+    W=float(input("Enter capacity of knapsack"))
+
+    max_value =knapsack(W,weights,values)
+    print(f"Maximum value in knapsack {max_value}")
+
+
+
+def knapsack(W,weights,values):
+
+    ratios=[]
+
+    for i in range(len(weights)):
+        ratio=values[i]/weights[i]
+        ratios.append((ratio,weights[i],values[i]))
+        ratios=sorted(ratios,key=lambda x : x[0],reverse=True)
+
+        total_value=0
+        current_weight=0
+
+        for i in range(len(ratios)):
+            ratio,weight,value=ratios[i]
+            if current_weight+ weight<=W:
+                current_weight+=weight
+                total_value+=value
+            else:
+                remaining_weight=W-current_weight
+                total_value+=ratio*remaining_weight
+                break
+    return total_value
+
+def main():
+
+    weights=[]
+    values=[]
+
+    n=int(input("Enter n : "))
+    for i in range(n):
+        weight=int(input("Enter wt"))
+        weights.append(weight)
+        value=int(input("Enter val"))
+        values.append(value)
+    W=int(input("Enter capacity"))
+
+    max_value=knapsack(W,weights,values)
+    print(f"Maximum value of knapsack {max_value}")
+
+main()
+
+
+
+
+
+
+
+
+def knapsack(weights,values,W):
+
+    n=len(weights)
+    dp=[[0 for _ in range(W+1)]for i in range(n+1)]
+
+    for i in range(1,n+1):
+        for w in range(W+1):
+            if weights[i-1]<=w:
+                dp[i][w]=max(dp[i-1][w],values[i-1]+dp[i-1][w-weights[i-1]])
+            else:
+                dp[i][w]=dp[i-1][w]
+
+
+    return dp[n][w]
+def main():
+    n = int(input("Enter the number of items: "))
+    weights = []
+    values = []
+
+    for i in range(n):
+        weight = int(input(f"Enter weight of item {i + 1}: "))
+        value = int(input(f"Enter value of item {i + 1}: "))
+        weights.append(weight)
+        values.append(value)
+
+    W = int(input("Enter the capacity of the knapsack: "))
+    max_value = knapsack(weights, values, W)
+    print(f"Maximum value in the knapsack: {max_value}")
+
+main()
+
+
+
+
+
+
+
+
+
+
+def fibonacci_i(n):
+    steps=0
+    if n<=1:
+        steps+=1
+        return n,steps
+    
+    a,b=0,1
+    for i in range(2,n+1):
+        a,b=b,a+b
+        steps+=2
+    steps+=1
+    return b,steps
+
+def fibonacci_r(n,steps=0):
+    steps+=1
+    if n<=1:
+        return n,steps
+    fib1,steps=fibonacci_r(n-1,steps)
+    fib2,steps=fibonacci_r(n-2,steps)
+    return fib1+fib2,steps
+
+def main():
+    while True:
+
+        print("\n 1.    Fibonacci Calculator    \n 1. Iterative \n 2.Recursive \n3.exit")
+
+        choice=input("Enter (1/2/3)")
+
+        if choice=='1':
+            n=int(input("Enter the value of n: "))
+            result,steps=fibonacci_i(n)
+            print(f"{result} with steps {steps}")
+        if choice=='2':
+            n=int(input("Enter the value of n: "))
+            result,steps=fibonacci_r(n)
+            print(f"{result} with steps {steps}")
+
+        if choice=='3':
+            break
+main()
